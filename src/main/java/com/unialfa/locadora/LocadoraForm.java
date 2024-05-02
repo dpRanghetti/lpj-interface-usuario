@@ -8,12 +8,12 @@ public class LocadoraForm extends JFrame {
     private JLabel labelFilme;
     private JTextField campoFilme;
     private JButton botaoSalvar;
-    private JList<String> listaDeFilmes;
+    private JList<Filme> listaDeFilmes;
 
     private String[] data = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10"};
 
     public LocadoraForm() {
-        setTitle("Locadora");
+        setTitle("Filme");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 550);
 
@@ -53,10 +53,13 @@ public class LocadoraForm extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    private DefaultListModel<String> carregarDadosLocadoras() {
+    private DefaultListModel<Filme> carregarDadosLocadoras() {
         var service = new LocadoraService();
-        DefaultListModel<String> model = new DefaultListModel<>();
-        service.readerFile().forEach(model::addElement);
+        DefaultListModel<Filme> model = new DefaultListModel<>();
+        service.readerFile().forEach( linha -> {
+            String[] filmeArray = linha.split(":");
+            model.addElement(new Filme(filmeArray[0], filmeArray[1]));
+        });
         return model;
     }
 
@@ -65,8 +68,11 @@ public class LocadoraForm extends JFrame {
         if (!campoFilme.getText().isEmpty() || !campoFilme.getText().isBlank()) {
             service.writerFile(campoFilme.getText());
             campoFilme.setText("");
-            DefaultListModel<String> model = new DefaultListModel<>();
-            service.readerFile().forEach(model::addElement);
+            DefaultListModel<Filme> model = new DefaultListModel<>();
+            service.readerFile().forEach( linha -> {
+                String[] filmeArray = linha.split(":");
+                model.addElement(new Filme(filmeArray[0], filmeArray[1]));
+            });
             listaDeFilmes.setModel(model);
         }
     }
